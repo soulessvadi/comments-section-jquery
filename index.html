@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Comments</title>
+	<style>
+		body{color: #8c9ab0;font-family: Verdana;}
+		*{box-sizing: border-box;}
+		h6{margin: 0;}
+		.btn {display: inline-block;margin-bottom: 0;font-weight: normal;text-align: center;vertical-align: middle;-ms-touch-action: manipulation;    touch-action: manipulation;cursor: pointer;background-image: none;border: 1px solid transparent;white-space: nowrap;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;border-radius: 4px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;color: #fff;}	
+		.btn.btn-red {border: none;display: inline-block;background-color: #D64137;}
+		.btn.btn-red{padding:10px 15px;}
+		.btn.btn-red:hover,.btn.btn-login:hover{background-color: #ff6950;}		
+		.btn.btn-blue {border: none;display: inline-block;background-color: #16a1cc;}
+		.btn.btn-blue{padding:10px 15px;}
+		.btn.btn-blue:hover{background-color: #05d5fa;}	
+		.flex {margin-right: auto;margin-left: auto;display: -ms-flexbox;display: flex;-ms-flex-flow: row wrap;flex-flow: row wrap;}
+		.column{-ms-flex: 1 1 0px;flex: 1 1 0px;padding-right: 0;padding-left: 0;min-width: 0;}		
+		.comments--block{padding: 30px;background-color: #171c29;border-radius: 5px;border: 1px solid #38405D;}
+		.comments--block .item{display: table;width: 100%;}
+		.comments--block .item:not(:last-child){padding-bottom: 10px;}
+		.comments--block .item .avatar{width: 42px;text-align: center;display: table-cell;vertical-align: top;position: relative;}
+		.comments--block .item .avatar .image{width: 42px; height: 42px; background-color: #272C43; border-radius: 3px;padding: 6px;position: relative;z-index: 2;}
+		.comments--block .item .avatar .image img{width: 100%;height: 100%;}
+		.comments--block .item .text{display: table-cell;vertical-align: middle;padding-left: 15px;padding-top: 12px;width: 100%;}
+		.comments--block .item .text h6{font:400 15px 'Verdana';color: #8c9ab0;}
+		.comments--block .item .user{font:700 18px 'Verdana';color: #16a1cc;}
+		.comments--block .item .date{font-size: 12px;}
+		.comments--block .item .date:before{content: '🕒';font-size: inherit;padding-right: 5px;padding-left: 15px;}
+		.comments--block .item .comment{font:400 14px 'Verdana';color: #fff;padding-top: 10px;}
+		.comments--block .item .controls{padding-top: 10px;vertical-align: bottom;}
+		.comments--block .item .controls:after{content:'';display: table;clear: both;}
+		.comments--block .item .controls span{display: inline-block!important;font-size: 12px;transition: all .15s;cursor: pointer;padding-right: 6px;}
+		.comments--block .item .controls span:hover{color: #16a1cc;}
+		.comments--block .item .controls .comments-count{}
+		.comments--block .item .controls .comments-count:before{content: '✉';font-size: 14px;padding-right: 5px;}
+		.comments--block .item .controls .reply{text-transform: capitalize;user-select: none;position: relative;}
+		.comments--block .item.open>.text>.controls>.show{color: #16a1cc;}
+		.comments--block .item.open>.text>.controls>.show:after{content: '▲';}
+		.comments--block .item.new-reply>.text>.controls>.reply{color: #16a1cc;}
+		.comments--block .item.new-reply>.text>.controls>.reply:after{content: '▲';}
+		.comments--block .item .controls .show:after,
+		.comments--block .item .controls .reply:after{content: '▼';font-size: 10px;padding-left: 5px;}
+		.comments--block .item .replies{padding: 10px 0 0 0;transition: all .2s;}
+		.comments--block .item .replies .item:not(:last-child)>.avatar:before{content: '';position: absolute;left: 21px;top: 21px;height: 100%;border-left: 1px solid #29304a;}
+		.comments--block .item>.text>.replies{transition:all .2s;visibility: hidden; opacity: 0;height:0;}
+		.comments--block .item.open>.text>.replies{visibility: visible; opacity: 1;height:auto;padding: 10px 0 0 35px;}
+		.comments--block .item>.text>.add-reply{transition:all .2s;visibility: hidden; opacity: 0;height:0;}
+		.comments--block .item.new-reply>.text>.add-reply{visibility: visible; opacity: 1;height:auto;padding: 10px 0 10px 100px;}
+		.comments--block .item .add-reply{padding: 0;padding: 10px 0;}
+		.comments--block .item .add-reply label{display:block;height: 40px;position: relative;}
+		.comments--block .item .add-reply input{padding-left: 15px; font:400 12px 'Verdana';color:#8c9ab0;display:block;width: 100%;height: 100%;border-radius: 5px 0 0 5px;outline: none;border:1px solid #38405D;border-right-color: transparent; background-color: transparent;}
+		.comments--block .item .add-reply input::placeholder{color:#8c9ab0;}
+		.comments--block .item .add-reply input:focus{border-color: #16a1cc;}
+		.comments--block .item .add-reply .btn{height: 40px;border-radius: 0 5px 5px 0;padding: 0 15px!important;font-size: 10px!important;letter-spacing: 0;text-transform: uppercase;}
+		.comments--add{padding: 50px 0 20px 0;}
+		.comments--add label{display:block;height: 40px;position: relative;}
+		.comments--add label:before{content: '☺';font-weight: 100;font-size: 18px;line-height: 40px;position: absolute;left: 18px;}
+		.comments--add input{padding-left: 50px; font:400 12px 'Verdana';color:#8c9ab0;display:block;width: 100%;height: 100%;border-radius: 5px 0 0 5px;outline: none;border:1px solid #38405D;border-right-color: transparent; background-color: transparent;}
+		.comments--add input::placeholder{color:#8c9ab0;}
+		.comments--add input:focus{border-color: #e54e3d;}
+		.comments--add .btn{height: 40px;border-radius: 0 5px 5px 0;padding: 0 15px!important;font-size: 10px!important;letter-spacing: 0;text-transform: uppercase;}
+	</style>
+</head>
+<body>
+	
+	<div class="comments--block">
+		<div class="comments--list">
+			<!-- comment -->
+			<div class="item ">
+				<div class="avatar">
+					<div class="image">
+						<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+					</div>
+				</div>
+				<div class="text">
+					<span class="user">Nickname</span>
+					<span class="date">8 hours ago</span>
+					<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+					<div class="controls">
+						<span class="comments-count">3</span>
+						<span class="show" data-reverse-text="Hide">Show</span>
+						<span class="reply">Reply</span>
+					</div>
+					<div class="add-reply">
+						<div class="flex">
+							<label class="column">
+								<input type="text" placeholder="Your message:">
+							</label>
+							<div class="column shrink">
+								<button class="btn btn-blue">Send</button>
+							</div>										
+						</div>
+					</div>
+					<div class="replies">
+						<div class="item">
+							<div class="avatar">
+								<div class="image">
+									<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+								</div>
+							</div>
+							<div class="text">
+								<span class="user">Nickname 2</span>
+								<span class="date">7 hours ago</span>
+								<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+								<div class="controls">
+									<span class="comments-count">2</span>
+									<span class="show" data-reverse-text="Hide">Show</span>
+									<span class="reply">Reply</span>
+								</div>
+								<div class="add-reply">
+									<div class="flex">
+										<label class="column">
+											<input type="text" placeholder="Your message:">
+										</label>
+										<div class="column shrink">
+											<button class="btn btn-blue">Send</button>
+										</div>										
+									</div>
+								</div>
+								<div class="replies">
+									<div class="item">
+										<div class="avatar">
+											<div class="image">
+												<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+											</div>
+										</div>
+										<div class="text">
+											<span class="user">Nickname 3</span>
+											<span class="date">5 hours ago</span>
+											<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit!</p>
+											<div class="controls">
+												<span class="comments-count">1</span>
+												<span class="show" data-reverse-text="Hide">Show</span>
+												<span class="reply">Reply</span>
+											</div>
+											<div class="add-reply">
+												<div class="flex">
+													<label class="column">
+														<input type="text" placeholder="Your message:">
+													</label>
+													<div class="column shrink">
+														<button class="btn btn-blue">Send</button>
+													</div>										
+												</div>
+											</div>
+											<div class="replies">
+												<div class="item">
+													<div class="avatar">
+														<div class="image">
+															<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+														</div>
+													</div>
+													<div class="text">
+														<span class="user">Nickname 3</span>
+														<span class="date">5 hours ago</span>
+														<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit!</p>
+														<div class="controls">
+															<span class="comments-count">1</span>
+															<span class="show" data-reverse-text="Hide">Show</span>
+															<span class="reply">Reply</span>
+														</div>
+														<div class="add-reply">
+															<div class="flex">
+																<label class="column">
+																	<input type="text" placeholder="Your message:">
+																</label>
+																<div class="column shrink">
+																	<button class="btn btn-blue">Send</button>
+																</div>										
+															</div>
+														</div>
+														<div class="replies">
+															<div class="item">
+																<div class="avatar">
+																	<div class="image">
+																		<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+																	</div>
+																</div>
+																<div class="text">
+																	<span class="user">Nickname 3</span>
+																	<span class="date">5 hours ago</span>
+																	<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit!</p>
+																	<div class="controls">
+																		<span class="comments-count">1</span>
+																		<span class="show" data-reverse-text="Hide">Show</span>
+																		<span class="reply">Reply</span>
+																	</div>
+																	<div class="add-reply">
+																		<div class="flex">
+																			<label class="column">
+																				<input type="text" placeholder="Your message:">
+																			</label>
+																			<div class="column shrink">
+																				<button class="btn btn-blue">Send</button>
+																			</div>										
+																		</div>
+																	</div>
+																	<div class="replies">
+																		<h6>No replies</h6>
+																	</div>
+																</div>
+															</div>
+															<div class="item">
+																<div class="avatar">
+																	<div class="image">
+																		<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+																	</div>
+																</div>
+																<div class="text">
+																	<span class="user">Nickname 3</span>
+																	<span class="date">5 hours ago</span>
+																	<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit!</p>
+																	<div class="controls">
+																		<span class="comments-count">1</span>
+																		<span class="show" data-reverse-text="Hide">Show</span>
+																		<span class="reply">Reply</span>
+																	</div>
+																	<div class="add-reply">
+																		<div class="flex">
+																			<label class="column">
+																				<input type="text" placeholder="Your message:">
+																			</label>
+																			<div class="column shrink">
+																				<button class="btn btn-blue">Send</button>
+																			</div>										
+																		</div>
+																	</div>
+																	<div class="replies">
+																		<h6>No replies</h6>
+																	</div>
+																</div>
+															</div>																					
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="item">
+										<div class="avatar">
+											<div class="image">
+												<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+											</div>
+										</div>
+										<div class="text">
+											<span class="user">Nickname 4</span>
+											<span class="date">5 hours ago</span>
+											<p class="comment">Lorem ipsum dolor sit amet...</p>
+											<div class="controls">
+												<span class="comments-count">1</span>
+												<span class="show" data-reverse-text="Hide">Show</span>
+												<span class="reply">Reply</span>
+											</div>
+											<div class="add-reply">
+												<div class="flex">
+													<label class="column">
+														<input type="text" placeholder="Your message:">
+													</label>
+													<div class="column shrink">
+														<button class="btn btn-blue">Send</button>
+													</div>										
+												</div>
+											</div>
+											<div class="replies">
+												<h6>No replies</h6>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="item">
+							<div class="avatar">
+								<div class="image">
+									<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+								</div>
+							</div>
+							<div class="text">
+								<span class="user">Nickname 6</span>
+								<span class="date">5 hours ago</span>
+								<p class="comment">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+								<div class="controls">
+									<span class="comments-count">0</span>
+									<span class="show" data-reverse-text="Hide">Show</span>
+									<span class="reply">Reply</span>
+								</div>
+								<div class="add-reply">
+									<div class="flex">
+										<label class="column">
+											<input type="text" placeholder="Your message:">
+										</label>
+										<div class="column shrink">
+											<button class="btn btn-blue">Send</button>
+										</div>										
+									</div>
+								</div>
+								<div class="replies">
+									<h6>No replies</h6>
+								</div>
+							</div>
+						</div>
+						<div class="item">
+							<div class="avatar">
+								<div class="image">
+									<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+								</div>
+							</div>
+							<div class="text">
+								<span class="user">Nickname 7</span>
+								<span class="date">3 hours ago</span>
+								<p class="comment">Lorem ipsum dolor sit amet...</p>
+								<div class="controls">
+									<span class="comments-count">0</span>
+									<span class="show" data-reverse-text="Hide">Show</span>
+									<span class="reply">Reply</span>
+								</div>
+								<div class="add-reply">
+									<div class="flex">
+										<label class="column">
+											<input type="text" placeholder="Your message:">
+										</label>
+										<div class="column shrink">
+											<button class="btn btn-blue">Send</button>
+										</div>										
+									</div>
+								</div>
+								<div class="replies">
+									<h6>No replies</h6>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- comment -->
+			<!-- comment -->
+			<div class="item">
+				<div class="avatar">
+					<div class="image">
+						<img src="https://image.flaticon.com/icons/png/128/70/70423.png">
+					</div>
+				</div>
+				<div class="text">
+					<span class="user">Nickname 5</span>
+					<span class="date">5 hours ago</span>
+					<p class="comment">Lorem ipsum dolor sit amet...</p>
+					<div class="controls">
+						<span class="comments-count">0</span>
+						<span class="show" data-reverse-text="Hide">Show</span>
+						<span class="reply">Reply</span>
+					</div>
+					<div class="add-reply">
+						<div class="flex">
+							<label class="column">
+								<input type="text" placeholder="Your message:">
+							</label>
+							<div class="column shrink">
+								<button class="btn btn-blue">Send</button>
+							</div>										
+						</div>
+					</div>
+					<div class="replies">
+						<h6>No replies</h6>
+					</div>
+				</div>
+			</div>
+			<!-- comment -->									
+		</div>
+		<div class="comments--add">
+			<div class="flex">
+				<label class="column">
+					<input type="text" placeholder="Your message:">
+				</label>
+				<div class="column shrink">
+					<button class="btn btn-red">Send</button>
+				</div>										
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>	
+	<script>
+		if($('.comments--block').length) {
+			$('.comments--block').find('.show').on('click', function() {
+				var ctext = $(this).text();
+				var ntext = $(this).attr('data-reverse-text');
+				$(this).text(ntext).attr('data-reverse-text', ctext);
+				$(this).closest('.item').toggleClass('open');
+			});
+			$('.comments--block').find('.reply').on('click', function() {
+				var comments = $('.comments--block .item');
+				var comment = $(this).closest('.item');
+				if(comment.hasClass('new-reply')) {
+					comment.removeClass('new-reply');
+				} else {
+					comments.removeClass('new-reply');
+					comment.addClass('new-reply');
+				}
+			});
+		}
+	</script>
+</body>
+</html>
